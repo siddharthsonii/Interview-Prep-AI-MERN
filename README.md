@@ -1,2 +1,1 @@
-# Interview-Prep-AI-MERN
-Interview Prep AI
+# Interview Prep AI (MERN)
