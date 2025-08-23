@@ -6,7 +6,7 @@ const questionSchema = new mongoose.Schema(
     question: String,
     answer: String,
     note: String,
-    isPainted: { type: Boolean, default: false },
+    isPinned: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
