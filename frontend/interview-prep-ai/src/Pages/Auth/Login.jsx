@@ -35,7 +35,6 @@ function Login({ setCurrentPage }) {
       const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
         email, password,
       });
-      console.log(response)
 
       const {token} = response.data;
 

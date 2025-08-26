@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 const ProfileInfoCard = () => {
   const { user, clearUser } = useContext(UserContext);
-  console.log(user);
   const navigate = useNavigate();
 
   const handleLogout = () => {

@@ -28,7 +28,6 @@ exports.createSession = async (req, res) => {
         return question._id;
       })
     );
-    console.log(questionDocs);
 
     session.questions = questionDocs;
     await session.save();
