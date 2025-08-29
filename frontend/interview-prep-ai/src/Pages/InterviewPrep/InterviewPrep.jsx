@@ -9,9 +9,9 @@ import DashboardLayout from "../../components/layouts/DashboardLayout";
 import RoleInfoHeader from "./components/RoleInfoHeader";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
-import QuestionCard from "../../components/cards/QuestionCard";
+import QuestionCard from "../../components/Cards/QuestionCard";
 import Drawer from "../../components/Drawer";
-import SkeletonLoader from "../../components/loader/SkeletonLoader";
+import SkeletonLoader from "../../components/Loader/SkeletonLoader";
 // import AIResponsePreview from "./components/AIResponsePreview";
 
 function InterviewPrep() {
