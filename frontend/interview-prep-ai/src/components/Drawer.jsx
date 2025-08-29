@@ -20,6 +20,7 @@ const Drawer = ({ isOpen, onClose, title, children }) => {
         >
           {title}
         </h5>
+        {/* Close Button */}
         <button
           type="button"
           onClick={onClose}

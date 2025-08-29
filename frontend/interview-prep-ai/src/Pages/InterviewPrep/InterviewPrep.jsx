@@ -41,18 +41,44 @@ function InterviewPrep() {
   };
 
   // Generate Concept Explanation
-  const generateConceptExplanation = async (question) => {};
+  const generateConceptExplanation = async (question) => {
+    try {
+      setErrorMsg("");
+      setExplanation(null);
+      setIsLoading(true);
+      setOpenLeanMoreDrawer(true);
+
+      const response = await axiosInstance.post(
+        API_PATHS.AI.GENERATE_EXPLANATION,
+        { question }
+      );
+
+      if (response.data && response.data.explanation) {
+        setExplanation(response.data);
+      } else {
+        setErrorMsg("No explanation received");
+      }
+    } catch (error) {
+      setExplanation(null);
+      setErrorMsg("Failed to generate explanation, Try again later");
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Pin Question
   const toggleQuestionPinStatus = async (questionId) => {
     try {
-      const response = await axiosInstance.post(API_PATHS.QUESTION.PIN(questionId));
+      const response = await axiosInstance.post(
+        API_PATHS.QUESTION.PIN(questionId)
+      );
       // console.log(response);
       // fetchSessionDetailsById();
 
-      if(response.data && response.data.question){
+      if (response.data && response.data.question) {
         // toast.success('Question Pinned Successfully');
-        fetchSessionDetailsById()
+        fetchSessionDetailsById();
       }
     } catch (error) {
       console.error("Error:", error);
@@ -60,7 +86,52 @@ function InterviewPrep() {
   };
 
   // Add more questions to a session
-  const uploadMoreQuestions = async () => {};
+  const uploadMoreQuestions = async () => {
+    try {
+      setIsUpdateLoader(true);
+      // ✅ Safely close Drawer & clear stale explanation when adding new questions
+      setOpenLeanMoreDrawer(false);
+      setExplanation(null);
+      setErrorMsg("");
+
+      const payload = {
+        role: sessionData?.role,
+        experience:
+          sessionData?.experience && sessionData.experience > 0
+            ? sessionData.experience
+            : 1,
+        topicsToFocus: Array.isArray(sessionData?.topicsToFocus)
+          ? sessionData.topicsToFocus.join(", ")
+          : sessionData?.topicsToFocus || "",
+        numberOfQuestions: 10,
+      };
+
+      console.log("Uploading more with:", payload);
+
+      const aiResponse = await axiosInstance.post(
+        API_PATHS.AI.GENERATE_QUESTIONS,
+        payload
+      );
+
+      const generatedQuestions = aiResponse.data;
+
+      await axiosInstance.post(API_PATHS.QUESTION.ADD_TO_SESSION, {
+        sessionId,
+        questions: generatedQuestions,
+      });
+
+      toast.success("Added More QA!!!");
+      fetchSessionDetailsById();
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        setErrorMsg(error.response.data.message);
+      } else {
+        setErrorMsg("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsUpdateLoader(false);
+    }
+  };
 
   useEffect(() => {
     if (sessionId) {
