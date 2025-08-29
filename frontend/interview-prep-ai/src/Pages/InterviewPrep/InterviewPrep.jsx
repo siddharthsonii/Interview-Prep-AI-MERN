@@ -7,6 +7,12 @@ import SpinnerLoader from "../../components/Loader/SpinnerLoader";
 import { toast } from "react-hot-toast";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import RoleInfoHeader from "./components/RoleInfoHeader";
+import axiosInstance from "../../utils/axiosInstance";
+import { API_PATHS } from "../../utils/apiPaths";
+import QuestionCard from "../../components/cards/QuestionCard";
+import Drawer from "../../components/Drawer";
+import SkeletonLoader from "../../components/loader/SkeletonLoader";
+// import AIResponsePreview from "./components/AIResponsePreview";
 
 function InterviewPrep() {
   const { sessionId } = useParams();
@@ -21,7 +27,18 @@ function InterviewPrep() {
   const [isUpdateLoader, setIsUpdateLoader] = useState(false);
 
   // Fetch session data by session id
-  const fetchSessionDetailsById = async () => {};
+  const fetchSessionDetailsById = async () => {
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.SESSION.GET_ONE(sessionId)
+      );
+      if (response.data && response.data.session) {
+        setSessionData(response.data.session);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   // Generate Concept Explanation
   const generateConceptExplanation = async (question) => {};
@@ -52,6 +69,95 @@ function InterviewPrep() {
             : ""
         }
       />
+
+      <div className="container mx-auto pt-4 pb-4 px-4 md:px-0">
+        <h2 className="text-lg color-black font-semibold">Interview Q & A</h2>
+
+        <div className="grid grid-cols-12 gap-4 mt-5 mb-10">
+          <motion.div
+            className="col-span-12"
+            animate={{
+              width: openLeanMoreDrawer ? "58.333333%" : "66.666667%",
+            }}
+            transition={{ duration: 0.1, ease: "easeInOut" }}
+          >
+            <AnimatePresence>
+              {sessionData?.questions?.map((data, index) => (
+                <motion.div
+                  key={data._id || index}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{
+                    duration: 0.4,
+                    type: "spring",
+                    stiffness: 100,
+                    delay: index * 0.1,
+                    damping: 15,
+                  }}
+                  layout // This is the key prop that animates position changes
+                  layoutId={`question-${data._id || index}`} // Helps framer track specific items
+                >
+                  <>
+                    <QuestionCard
+                      question={data?.question}
+                      answer={data?.answer}
+                      onLearnMore={() =>
+                        generateConceptExplanation(data.question)
+                      }
+                      isPinned={data?.isPinned}
+                      onTogglePin={() => toggleQuestionPinStatus(data._id)}
+                    />
+                  </>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            <div className="flex items-center justify-center mt-5">
+              <button
+                className="flex items-center gap-3 text-sm text-white font-medium bg-black px-2 py-2 mr-2 rounded text-nowrap cursor-pointer"
+                disabled={isLoading || isUpdateLoader}
+                onClick={uploadMoreQuestions}
+              >
+                {isUpdateLoader ? (
+                  <SpinnerLoader />
+                ) : (
+                  <LuListCollapse className="text-lg" />
+                )}
+                Load More
+              </button>
+            </div>
+          </motion.div>
+        </div>
+
+        <Drawer
+          isOpen={openLeanMoreDrawer}
+          onClose={() => setOpenLeanMoreDrawer(false)}
+          title={!isLoading && explanation ? explanation?.title : ""}
+        >
+          {errorMsg && (
+            <p className="flex gap-2 text-sm text-amber-600 font-medium">
+              <LuCircleAlert className="mt-1" /> {errorMsg}
+            </p>
+          )}
+
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <SkeletonLoader />
+            </motion.div>
+          )}
+
+          {!isLoading && explanation && (
+            <div className="mt-4 text-gray-700 bg-gray-50 px-5 py-3 rounded-lg">
+              <AIResponsePreview content={explanation?.explanation} />
+            </div>
+          )}
+        </Drawer>
+      </div>
     </DashboardLayout>
   );
 }
