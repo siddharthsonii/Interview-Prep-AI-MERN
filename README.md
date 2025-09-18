@@ -51,7 +51,7 @@ An AI-powered web application built with the **MERN stack** (MongoDB, Express.js
 ### Prerequisites
 - Node.js (v16 or higher)
 - MongoDB (local or MongoDB Atlas)
-- Gemini API key (sign up at [Gemini API documentation](https://example.com/gemini-api))
+- Gemini API key (sign up at [Gemini API documentation](https://ai.google.dev/gemini-api/docs))
 - Git
 
 ### Steps
@@ -75,12 +75,13 @@ An AI-powered web application built with the **MERN stack** (MongoDB, Express.js
    * Create a .env file in the backend directory with the following:
      ```env
       MONGO_URI=your_mongodb_connection_string
+      JWT_SECRET=your_JWT_Secret_key
       GEMINI_API_KEY=your_gemini_api_key
-      PORT=5000
+      PORT=8000
 
    * Create a .env file in the frontend directory with:
      ```env
-     REACT_APP_API_URL=http://localhost:5000/api
+     VITE_BASE_URL=http://localhost:8000
 
 4. **Run the application**:
    * Start the backend server:
@@ -91,10 +92,10 @@ An AI-powered web application built with the **MERN stack** (MongoDB, Express.js
    * Start the frontend server:
      ```bash
      cd frontend
-     npm start
+     npm run dev
 
 5. **Access the app**:
-   * Open your browser and navigate to http://localhost:3000.
+   * Open your browser and navigate to http://localhost:5173.
   
 ## Usage
 
@@ -106,14 +107,26 @@ An AI-powered web application built with the **MERN stack** (MongoDB, Express.js
 ## API Endpoints
 
 Here are some key API endpoints implemented in the app:
+- **Auth Routes**:
+  * POST /api/auth/register - Signup
+  * POST /api/auth/login - Authenticate user & return JWT token
+  * GET /api/auth/profile - Get logged-in user details
+  * POST /api/auth/upload-image - Upload profile picture
+
 - **Question Routes**:
-  * GET /api/questions - Fetch questions based on role and experience
-  * POST /api/questions/pin - Pin a question for quick access
-  * GET /api/questions/pinned - Retrieve pinned questions
+  * POST /api/questions/add - Add more questions to a session
+  * POST /api/questions/:id/pin - Pin or Unpin a question
+  * POST /api/questions/:id/note - Update/Add a note to a question
 
 - **Session Routes**:
-  * POST /api/sessions - Save an interview session
-  * GET /api/sessions - Retrieve saved sessions
+  * POST /api/sessions/create - Create a new interview session with questions
+  * GET /api/sessions/my-sessions - Get all user sessions
+  * GET /api/sessions/:id - Get session details with questions
+  * DELETE /api/sessions/:id - Delete a session
+
+- **AI**:
+  * GET /api/ai/generate-questions - Generate interview questions and answers using Gemini
+  * GET /api/ai/generate-explanation - Generate concept explanation using Gemini
 
 ## Contributing
 
@@ -134,8 +147,5 @@ This project is licensed under the MIT License. See the LICENSE file for details
 - The **Tech Stack** section excludes JWT and bcrypt since they are related to authentication, which was not included per your request.
 - The **Usage** section is tailored to reflect the features starting from role-based sessions.
 - The **API Endpoints** section omits authentication-related routes to align with the requested scope.
-- Replace `https://github.com/your-username/ai-interview-prep-app.git` with your actual repository URL.
-- Replace `https://example.com/gemini-api` with the actual Gemini API documentation link (if available).
-- The `.env` file excludes `JWT_SECRET` since authentication is not included.
 
 If you need further adjustments or want to include specific details, please let me know!
